@@ -70,6 +70,30 @@
   .who p{margin:0;color:var(--dim);font-size:17px;line-height:1.35;font-style:italic}
   .who .soon{margin-top:auto;padding-top:12px;font-size:11px;color:var(--faint);text-transform:uppercase}
 
+  /* ---------- Maria: creator + portrait ---------- */
+  .creator h2{font-size:38px;font-weight:500;margin:20px 0 6px;text-align:center}
+  .creator .hint{text-align:center;color:var(--dim);font-style:italic;font-size:19px;margin:0 0 26px}
+  .creator-grid{display:grid;grid-template-columns:200px minmax(0,1fr);gap:30px;align-items:start}
+  .stage-frame{border:1px solid var(--line);background:rgba(239,230,212,.03);padding:14px;display:grid;place-items:center}
+  .stage-frame svg{width:160px;height:auto;display:block}
+  .opt{margin-bottom:16px}
+  .opt .lab{font-size:11.5px;text-transform:uppercase;color:var(--dim);margin-bottom:7px}
+  .opt .row{display:flex;flex-wrap:wrap;gap:7px}
+  .opt button{background:none;border:1px solid var(--line);padding:7px 13px;font-size:17px;cursor:pointer;transition:border-color .2s,background .2s}
+  .opt button.on{border-color:var(--candle);background:rgba(232,178,92,.10)}
+  .opt button .sw{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:7px;vertical-align:-1px;border:1px solid rgba(255,255,255,.3)}
+  .portrait{position:relative;float:right;width:92px;margin:0 0 10px 18px;border:1px solid var(--line);background:rgba(239,230,212,.03);padding:6px}
+  .portrait svg{display:block;width:100%;height:auto}
+  .portrait .p-joyce{position:absolute;inset:6px;opacity:0}
+  .portrait.flicker .p-custom{animation:flickA 3.4s steps(1) infinite}
+  .portrait.flicker .p-joyce{animation:flickB 3.4s steps(1) infinite}
+  .portrait.joyce .p-custom{opacity:0}
+  .portrait.joyce .p-joyce{opacity:1}
+  .portrait .cap{font-size:10px;text-transform:uppercase;color:var(--faint);text-align:center;margin-top:4px}
+  @keyframes flickA{0%{opacity:1}62%{opacity:0}66%{opacity:1}71%{opacity:0}74%{opacity:1}100%{opacity:1}}
+  @keyframes flickB{0%{opacity:0}62%{opacity:1}66%{opacity:0}71%{opacity:1}74%{opacity:0}100%{opacity:0}}
+  @media (max-width:560px){ .creator-grid{grid-template-columns:1fr} .stage-frame svg{width:120px} .portrait{width:74px} }
+
   /* ---------- Escape bar ---------- */
   .hud{position:sticky;top:0;z-index:5;padding:14px 0 12px;margin:-28px -20px 22px;padding-left:20px;padding-right:20px;
     background:linear-gradient(180deg,var(--bg) 70%,transparent)}
@@ -178,6 +202,19 @@
   </div>
 </section>
 
+<!-- Maria's character creator -->
+<section class="screen creator" id="s-creator">
+  <div class="wrap">
+    <h2>Make Maria</h2>
+    <p class="hint">She can look however you like. Choose carefully.</p>
+    <div class="creator-grid">
+      <div class="stage-frame" id="creatorPreview"></div>
+      <div id="creatorOpts"></div>
+    </div>
+    <div style="text-align:center"><button class="begin" id="becomeMaria">Become Maria</button></div>
+  </div>
+</section>
+
 <!-- Scene -->
 <section class="screen scene" id="s-scene">
   <div class="hud"><div class="hud-inner">
@@ -237,10 +274,10 @@
 
 const CAST = [
   { id:'gabriel', name:'Gabriel', story:'The Dead', blurb:'A Christmas party, a speech to give, and a wife he thinks he knows.', ready:true },
-  { id:'boy',     name:'The Boy', story:'Araby', blurb:'A promise to bring her something from the bazaar.', ready:false },
-  { id:'bob',     name:'Bob Doran', story:'The Boarding House', blurb:'A Sunday morning, a summons, and a door he could still run through.', ready:false },
-  { id:'polly',   name:'Polly', story:'The Boarding House', blurb:'Upstairs, waiting, while everyone else decides.', ready:false },
-  { id:'maria',   name:'Maria', story:'Clay', blurb:'Design her yourself. See if anyone notices.', ready:false }
+  { id:'boy',     name:'The Boy', story:'Araby', blurb:'A promise to bring her something from the bazaar.', ready:true },
+  { id:'bob',     name:'Bob Doran', story:'The Boarding House', blurb:'A Sunday morning, a summons, and a door he could still run through.', ready:true },
+  { id:'polly',   name:'Polly', story:'The Boarding House', blurb:'Upstairs, waiting, while everyone else decides.', ready:true },
+  { id:'maria',   name:'Maria', story:'Clay', blurb:'Design her yourself. See if anyone notices.', ready:true }
 ];
 
 const J = (text, where) => ({ joyce:text, cite:where });
@@ -340,6 +377,297 @@ const EPIPHANY = [
   J('"He saw himself as a ludicrous figure, acting as a pennyboy for his aunts, a nervous, well-meaning sentimentalist, orating to vulgarians and idealising his own clownish lusts, the pitiable fatuous fellow he had caught a glimpse of in the mirror."', '"The Dead"')
 ];
 
+/* ---------- The Boy (Araby) ----------
+   Quoted text is from "Araby" (Dubliners, 1914, public domain). */
+const BOY = [
+  {
+    place:'North Richmond Street · Winter evenings',
+    title:'Mangan\'s sister',
+    text:[
+      J('"North Richmond Street, being blind, was a quiet street except at the hour when the Christian Brothers\' School set the boys free."', '"Araby"'),
+      'Every evening your friend Mangan\'s older sister comes to the door to call him in to tea. You have never once spoken to her.',
+      J('"Her name was like a summons to all my foolish blood."', '"Araby"')
+    ],
+    choices:[
+      { label:'Lie on the parlour floor and watch her door from behind the blind.', note:'What the boy did', d:+6,
+        result:[ J('"The blind was pulled down to within an inch of the sash so that I could not be seen."', '"Araby"'), 'When she comes out, you grab your books and follow her down the street, keeping her brown figure always in your eye.' ] },
+      { label:'Walk straight up to her and say hello.', note:'Beyond the book', d:+16,
+        result:['Your heart is hammering so hard you\'re sure she can hear it. "Hello," you say. She smiles and says your name, as if she has always known it. You run home without feeling the ground.'] },
+      { label:'Write her a letter and slip it under her door.', note:'Beyond the book', d:+12,
+        result:['You write it nine times. The tenth version only says that you think about her. You slide it under the door and run. All the next day, the grey street feels full of possibility.'] }
+    ]
+  },
+  {
+    place:'The railings · Evening',
+    title:'She asks if you\'re going to Araby',
+    text:[
+      J('"At last she spoke to me."', '"Araby"'),
+      'Araby is the grand bazaar that has come to Dublin, all music and lights and Eastern names. She can\'t go: there is a retreat that week at her convent. The lamplight catches the white curve of her neck as she turns a bracelet round and round her wrist.'
+    ],
+    choices:[
+      { label:'"If I go, I will bring you something."', note:'What the boy did', d:+10,
+        result:['She says it\'s well for you. From that night on, school, chores and the dull houses of the street all become obstacles standing between you and Saturday.'] },
+      { label:'Ask her to come with you instead.', note:'Beyond the book', d:+14,
+        result:['She laughs and shakes her head. "I can\'t, the retreat." But she doesn\'t say no to the idea. For a moment you can see it: the two of you walking into Araby side by side.'] },
+      { label:'Promise her the most beautiful thing in the whole bazaar.', note:'Beyond the book', d:+16,
+        result:[ 'You say it with such certainty that she looks at you differently. You feel like a knight on a quest.', J('"I imagined that I bore my chalice safely through a throng of foes."', '"Araby"') ] }
+    ]
+  },
+  {
+    place:'Your uncle\'s house · Saturday night',
+    title:'Waiting for the florin',
+    text:[
+      'You reminded your uncle about the bazaar at breakfast. Now it is past eight and he still hasn\'t come home. The clock ticks. An old pawnbroker\'s widow, Mrs Mercer, sits at the tea-table, gossiping.',
+      J('"I\'m afraid you may put off your bazaar for this night of Our Lord."', 'Your aunt, "Araby"')
+    ],
+    choices:[
+      { label:'Go upstairs and wait at the window.', note:'What the boy did', d:+4,
+        result:['You press your forehead against the cold glass and picture her figure in the lamplight. At nine you hear his latchkey in the hall door. He had forgotten. He recites a poem about an Arab and his horse, then finally gives you the florin.'] },
+      { label:'Don\'t wait. Set off for the bazaar on your own.', note:'Beyond the book', d:+18,
+        result:['You slip out into the dark with no money at all, sure you\'ll think of something. Halfway down the street you hear your uncle calling after you. He is home at last. He presses a florin into your hand and laughs: "All work and no play makes Jack a dull boy."'] },
+      { label:'Ask your aunt for the money yourself.', note:'Beyond the book', d:+10,
+        result:['She has nothing to spare until your uncle comes in. You sit with her, polite and furious, until nine, when you hear his key in the door. He had forgotten. Then he gives you the florin.'] }
+    ]
+  },
+  {
+    place:'Araby · Nearly ten o\'clock',
+    title:'The great hall',
+    text:[
+      'The train crawls. By the time you push through the turnstile, nearly all the stalls are closed and half the hall is in shadow.',
+      J('"I recognised a silence like that which pervades a church after a service."', '"Araby"'),
+      'At a stall of porcelain vases and flowered tea-sets, a young lady is laughing with two young men. She notices you only at the very end.'
+    ],
+    choices:[
+      { label:'Hesitate, and tell her "No, thank you."', note:'What the boy did', d:+4,
+        result:['She turns back to the young men. You linger at the stall, pretending to be interested in the vases, knowing it is no use.'] },
+      { label:'Buy the prettiest vase with everything you have.', note:'Beyond the book', d:+16,
+        result:['You put your coins on the counter. She wraps the vase slowly, still talking over her shoulder to the young men. You hold the parcel like a promise kept.'] },
+      { label:'Ask her which gift a girl would love most.', note:'Beyond the book', d:+12,
+        result:['She looks you up and down, amused, and waves at the tea-sets. "Any of them, I\'m sure." The young men laugh. You pick one anyway.'] }
+    ]
+  }
+];
+
+const BOY_EPIPHANY = [
+  J('"I heard a voice call from one end of the gallery that the light was out."', '"Araby"'),
+  J('"The upper part of the hall was now completely dark."', '"Araby"'),
+  { stage:'Whatever you are holding, a parcel, a few coins, nothing at all, suddenly feels very small.' },
+  J('"I allowed the two pennies to fall against the sixpence in my pocket."', '"Araby"'),
+  J('"Gazing up into the darkness I saw myself as a creature driven and derided by vanity; and my eyes burned with anguish and anger."', '"Araby"')
+];
+
+/* ---------- Bob Doran (The Boarding House) ----------
+   Quoted text is from "The Boarding House" (Dubliners, 1914, public domain). */
+const BOB = [
+  {
+    place:'Mrs Mooney\'s boarding house, Hardwicke Street · Sunday morning',
+    title:'The summons',
+    text:[
+      J('"Mrs Mooney was a butcher\'s daughter. She was a woman who was quite able to keep things to herself: a determined woman."', '"The Boarding House"'),
+      'You are thirty-four, with a good job at a Catholic wine-merchant\'s office. You have been carrying on with her daughter, Polly. Last night you went to confession, and the priest drew out every ridiculous detail. This morning, Mrs Mooney has sent word that she wishes to speak with you.'
+    ],
+    choices:[
+      { label:'Try to shave. Your hands are shaking too much.', note:'What Bob did', d:+4,
+        result:['Twice you stop and wipe the fogged glass. Your face looks back at you, older than it was last week. You think of your employer, of what people in the office would say.'] },
+      { label:'Pack a bag and run for the night boat to England.', note:'Beyond the book', d:+18,
+        result:['You are on the quay before dawn, your bag in your hand, the sea black and wide. Then you think of your job, your savings, your name, and of how small England would feel with all this following you. You walk back up the hill in the grey light.'] },
+      { label:'Go back to the priest. Ask him what you can do.', note:'Beyond the book', d:+8,
+        result:['He hears you out in the dim box and tells you that you have only one honourable course, which is reparation. You come out into the bright street feeling no lighter than before.'] }
+    ]
+  },
+  {
+    place:'Your room · Mid-morning',
+    title:'Polly at the door',
+    text:[
+      'There is a light tap. It is Polly, her face streaked with crying. She throws her arms around your neck.',
+      J('"O Bob! Bob! What am I to do? What am I to do at all?"', 'Polly, "The Boarding House"')
+    ],
+    choices:[
+      { label:'Comfort her. Tell her it will be all right.', note:'What Bob did', d:+6,
+        result:['You tell her not to cry, that it would be all right, never fear. You hardly know what you mean by it. She clings to you a moment longer, then goes.'] },
+      { label:'Whisper: let\'s leave Dublin together, tonight.', note:'Beyond the book', d:+16,
+        result:['She stares at you, then laughs through her tears as if you had said something wonderful. For a moment you mean it. Then you hear her mother moving about downstairs, and you both fall quiet.'] },
+      { label:'Tell her the truth: you don\'t want to marry anyone.', note:'Beyond the book', d:+12,
+        result:['She goes very still. "Then what do I tell Mammy?" she asks. You have no answer. You only feel, more clearly than ever, that once you are married you are done for.'] }
+    ]
+  },
+  {
+    place:'The top of the stairs · Noon',
+    title:'The missus wants to see you',
+    text:[
+      'Mary the servant comes up. The missus would like to see you in the parlour.',
+      { stage:'Somewhere below, Polly\'s brother Jack is home. He once said what he would do to any fellow who tried that sort of game on with his sister.' }
+    ],
+    choices:[
+      { label:'Put on your coat and go down.', note:'What Bob did', d:+4,
+        result:['You set your face and start down, one hand on the banister.'] },
+      { label:'Open the window and climb out onto the roof.', note:'Beyond the book', d:+18,
+        result:['The cold air hits you. The slates are wet. From up here the whole city is laid out, roofs and spires and the grey line of the sea. Then Mary calls your name again from the landing, and you climb back in.'] },
+      { label:'March down and tell Mrs Mooney you refuse.', note:'Beyond the book', d:+14,
+        result:['You rehearse it on the landing: you are a free man, you owe her nothing. The words sound brave in your head. Your feet are already on the stairs.'] }
+    ]
+  }
+];
+
+const BOB_EPIPHANY = [
+  J('"He longed to ascend through the roof and fly away to another country where he would never hear again of his trouble,"', '"The Boarding House"'),
+  J('"and yet a force pushed him downstairs step by step."', '"The Boarding House"'),
+  { stage:'Jack Mooney is standing at the foot of the stairs. He looks up at you. He says nothing. He does not need to.' },
+  { stage:'The parlour door is open. Mrs Mooney is waiting.' }
+];
+
+/* ---------- Polly (The Boarding House) ---------- */
+const POLLY = [
+  {
+    place:'Mrs Mooney\'s boarding house · Saturday',
+    title:'Your mother has noticed',
+    text:[
+      J('"Polly was a slim girl of nineteen; she had light soft hair and a small full mouth."', '"The Boarding House"'),
+      'Your mother brought you home from the corn-factor\'s office to help with the house, and to be among the young men. Now she has noticed you and Mr Doran. She says nothing. She is waiting for the right moment.'
+    ],
+    choices:[
+      { label:'Say nothing. Let her decide what happens.', note:'What Polly did', d:+4,
+        result:['You both know, and neither of you says it. It is a strange, quiet kind of understanding. The house goes on as usual around you.'] },
+      { label:'Tell her you won\'t be pushed into anything.', note:'Beyond the book', d:+16,
+        result:['Your mother looks at you for a long moment. "Nobody\'s pushing anybody, dear," she says calmly, and goes back to her accounts. You feel as if you\'ve shouted into a well.'] },
+      { label:'Go out and ask for your old typing job back.', note:'Beyond the book', d:+18,
+        result:['The office manager is kind but says the place has been filled. Walking home, you look into every shop window and imagine a different life behind each one.'] }
+    ]
+  },
+  {
+    place:'Upstairs · Sunday morning',
+    title:'Mr Doran\'s door',
+    text:[
+      'Your mother is speaking to Mr Doran today. You can hear the bells of George\'s Church through the open window.'
+    ],
+    choices:[
+      { label:'Go to his room and cry on his shoulder.', note:'What Polly did', d:+6,
+        result:['"O Bob! Bob! What am I to do?" He tells you it will be all right, never fear. He doesn\'t look at you when he says it.'] },
+      { label:'Tell him you don\'t want to marry him either.', note:'Beyond the book', d:+16,
+        result:['He looks almost relieved, and then frightened, because what you want has nothing to do with what is going to happen. You both stand there not knowing what to say.'] },
+      { label:'Tell him to run, while he still can.', note:'Beyond the book', d:+12,
+        result:['He stares at you. "And leave you to face her?" You are surprised that he asks. Neither of you moves.'] }
+    ]
+  },
+  {
+    place:'Your bedroom · Noon',
+    title:'Alone',
+    text:[
+      'Mr Doran has gone down to the parlour. The house is very quiet.'
+    ],
+    choices:[
+      { label:'Sit on the bed and wait.', note:'What Polly did', d:+6,
+        result:['You cool your eyes with a wet towel and look at yourself in the mirror. Then you sit on the edge of the bed.'] },
+      { label:'Go down and speak for yourself.', note:'Beyond the book', d:+18,
+        result:['You get as far as the landing. Through the parlour door you hear your mother\'s voice, low and even, and his saying almost nothing. Nobody has asked for you. You go back up.'] },
+      { label:'Start packing a bag.', note:'Beyond the book', d:+14,
+        result:['You fold two blouses and stop. Where would you go? You sit down on the bed beside the half-packed bag.'] }
+    ]
+  }
+];
+
+const POLLY_EPIPHANY = [
+  J('"She waited on patiently, almost cheerfully, without alarm, her memories gradually giving place to hopes and visions of the future."', '"The Boarding House"'),
+  J('"Her hopes and visions were so intricate that she no longer saw the white pillows on which her gaze was fixed or remembered that she was waiting for anything."', '"The Boarding House"'),
+  J('"At last she heard her mother calling."', '"The Boarding House"'),
+  J('"Come down, dear. Mr Doran wants to speak to you."', 'Mrs Mooney'),
+  J('"Then she remembered what she was waiting for."', '"The Boarding House"')
+];
+
+/* ---------- Maria (Clay) ----------
+   Quoted text is from "Clay" (Dubliners, 1914, public domain).
+   Scenes marked flicker:true make the player's custom Maria flicker back to Joyce's description. */
+const MARIA = [
+  {
+    place:'The Dublin by Lamplight laundry · Hallow Eve',
+    title:'Everyone is so fond of Maria',
+    text:[
+      J('"Maria was a very, very small person indeed but she had a very long nose and a very long chin."', '"Clay"'),
+      'That is how they all see you, whatever you look like. At tea the laundry women tease you that you\'ll get the ring in the barmbrack this year.',
+      J('"Everyone was so fond of Maria."', '"Clay"')
+    ],
+    choices:[
+      { label:'Laugh, and say you don\'t want any ring or man either.', note:'What Maria did', d:+4,
+        result:['Everyone laughs with you. Your eyes sparkle, and the tip of your nose nearly meets the tip of your chin.'] },
+      { label:'Say, quite seriously, that you\'d like to marry one day.', note:'Beyond the book', d:+16,
+        result:['There is a short, kind silence, the kind that is worse than laughter. Then someone passes the tea and they all go on talking as before.'] },
+      { label:'Slip away early to get to Joe\'s before dark.', note:'Beyond the book', d:+10,
+        result:['The matron lets you go with a smile: "Maria, you are a veritable peace-maker!" You hurry out into the evening.'] }
+    ]
+  },
+  {
+    place:'Your little room · Before leaving',
+    title:'The mirror',
+    flicker:true,
+    text:[
+      'You change into your good skirt and boots. You stand before the mirror.',
+      J('"In spite of its years she found it a nice tidy little body."', '"Clay"')
+    ],
+    choices:[
+      { label:'Look at yourself with quaint affection.', note:'What Maria did', d:+8,
+        result:['You smile at the woman in the glass. For a moment you could swear she flickered, but no, it is only the candle.'] },
+      { label:'Put on your very best, and a little colour in your cheeks.', note:'Beyond the book', d:+14,
+        result:['You look lovely. You are sure of it. You go out with your head high.'] },
+      { label:'Turn the mirror to the wall.', note:'Beyond the book', d:+12,
+        result:['You dress without looking. It is easier to believe what you like about yourself that way.'] }
+    ]
+  },
+  {
+    place:'Henry Street and the tram · Evening',
+    title:'The plumcake',
+    text:[
+      'You buy a slice of plumcake for Joe\'s family, the best in the shop, with lots of almond icing. On the crowded tram, an elderly gentleman with a grey moustache makes room for you.'
+    ],
+    choices:[
+      { label:'Chat with the polite gentleman.', note:'What Maria did', d:+8,
+        result:[ 'He is very kind and talks about Hallow Eve and the rainy weather.', J('"She thought how easy it was to know a gentleman even when he has a drop taken."', '"Clay"') ] },
+      { label:'Hold the cake tight on your lap the whole way.', note:'Beyond the book', d:+12,
+        result:['You don\'t let go of it once. Every bump of the tram, you hold it closer.'] },
+      { label:'Get off and walk the rest of the way.', note:'Beyond the book', d:+10,
+        result:['The evening air is fresh and you are proud of yourself for saving the fare. You arrive with your parcel and your cheeks pink.'] }
+    ]
+  },
+  {
+    place:'Joe\'s house · Later',
+    title:'The Hallow Eve game',
+    flicker:true,
+    text:[
+      'The cake is gone. You can\'t find it anywhere, though you were sure you had it. The children say it doesn\'t matter.',
+      'Now the girls are playing the old Hallow Eve game: blindfolded, you touch one of the saucers on the table, and what you find tells your future. A ring for marriage. A prayer-book for the convent. Water for travel.'
+    ],
+    choices:[
+      { label:'Let them blindfold you and lead you to the table.', note:'What Maria did', d:+10,
+        result:['You laugh and laugh till the tip of your nose nearly meets the tip of your chin. They tie the bandage on and lead you up to the table.'] },
+      { label:'Say you\'d rather just watch.', note:'Beyond the book', d:+12,
+        result:['"Ah, go on, Maria!" The children pull you up, laughing. Before you can say no again, the bandage is over your eyes.'] },
+      { label:'Peek under the blindfold.', note:'Beyond the book', d:+16,
+        result:['You lift the edge of the bandage just a crack, but the room is full of moving shadows and you can\'t see the saucers. Someone straightens it for you, gently.'] }
+    ]
+  }
+];
+
+const MARIA_EPIPHANY = [
+  J('"She moved her hand about here and there in the air and descended on one of the saucers. She felt a soft wet substance with her fingers and was surprised that nobody spoke or took off her bandage."', '"Clay"'),
+  J('"There was a pause for a few seconds; and then a great deal of scuffling and whispering."', '"Clay"'),
+  J('"Maria understood that it was wrong that time and so she had to do it over again: and this time she got the prayer-book."', '"Clay"'),
+  { stage:'Later, Joe asks you to sing. You sing the first verse of "I Dreamt that I Dwelt" twice.' },
+  J('"But no one tried to show her her mistake."', '"Clay"')
+];
+
+/* Each playable character: their scenes, their epiphany, and how the reveal describes it. */
+const STORIES = {
+  gabriel: { scenes:GABRIEL, epPlace:'The Gresham Hotel · Later', epTitle:'She is crying', epiphany:EPIPHANY, crashAt:2, endLabel:'the snow', startLabel:'the party',
+    lede:n => `There were ${n} different ways through Gabriel's evening. You chose one. Every one of them ended with Michael Furey, the gasworks, and the snow.` },
+  boy:     { scenes:BOY, epPlace:'Araby · Ten o\'clock', epTitle:'The light is out', epiphany:BOY_EPIPHANY, crashAt:1, endLabel:'the dark hall', startLabel:'the street',
+    lede:n => `There were ${n} different ways through the boy's Saturday. You chose one. Every one of them ended in the same empty hall, in the dark, at ten o'clock.` },
+  bob:     { scenes:BOB, epPlace:'The stairs · Noon', epTitle:'Step by step', epiphany:BOB_EPIPHANY, crashAt:1, endLabel:'the parlour', startLabel:'the summons',
+    lede:n => `There were ${n} different ways through Bob Doran's Sunday morning. You chose one. Every one of them ended on the same stairs, going down, toward the parlour and the marriage.` },
+  polly:   { scenes:POLLY, epPlace:'Your bedroom · Waiting', epTitle:'The white pillows', epiphany:POLLY_EPIPHANY, crashAt:2, endLabel:'waiting', startLabel:'the house',
+    lede:n => `There were ${n} different ways through Polly's weekend. You chose one. Every one of them ended with Polly alone on her bed, waiting, until her mother called her down.` },
+  maria:   { scenes:MARIA, creator:true, epPlace:'Joe\'s house · The game', epTitle:'A soft wet substance', epiphany:MARIA_EPIPHANY, crashAt:0, endLabel:'the clay', startLabel:'the laundry',
+    lede:n => `There were ${n} different ways through Maria's Hallow Eve, and you even chose her face. Every one of them ended with her fingers in the clay, and everyone pretending it hadn't happened.` }
+};
+
 const SNOW_LINES = [
   J('"His soul swooned slowly as he heard the snow falling faintly through the universe and faintly falling, like the descent of their last end, upon all the living and the dead."', '"The Dead"'),
   J('"Yes, the newspapers were right: snow was general all over Ireland."', '"The Dead"'),
@@ -354,7 +682,7 @@ const SNOW_LINES = [
 /* =========================================================
    STATE + HELPERS
    ========================================================= */
-let step = 0, escape = 0, taken = [];
+let step = 0, escape = 0, taken = [], cur = STORIES.gabriel;
 const $ = id => document.getElementById(id);
 function show(id){
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('on')); $(id).classList.add('on'); window.scrollTo(0,0);
@@ -374,6 +702,66 @@ function setBar(v){
 }
 
 /* =========================================================
+   MARIA: CHARACTER CREATOR + PORTRAIT
+   ========================================================= */
+const LOOK_OPTS = {
+  height:{ label:'Height', items:[['small','Small'],['medium','Medium'],['tall','Tall']] },
+  face:  { label:'Face',   items:[['round','Round'],['oval','Oval'],['long','Long']] },
+  hair:  { label:'Hair',   items:[['bun','Bun'],['loose','Loose'],['short','Short']] },
+  hairColor:{ label:'Hair colour', swatch:true, items:[['#2a211b','Black'],['#6b4a2f','Brown'],['#8e3f22','Auburn'],['#9a948a','Grey']] },
+  dress: { label:'Clothes', swatch:true, items:[['#2d3a5c','Navy'],['#5c2d4a','Plum'],['#2f5240','Green'],['#9b5a5e','Rose']] }
+};
+let look = { height:'medium', face:'oval', hair:'loose', hairColor:'#6b4a2f', dress:'#9b5a5e' };
+// Joyce: "a very, very small person indeed but she had a very long nose and a very long chin."
+const JOYCE_LOOK = { height:'tiny', face:'joyce', hair:'bun', hairColor:'#8a8378', dress:'#46443f' };
+
+function portraitSVG(o){
+  const scale = {tiny:.6, small:.76, medium:.88, tall:1}[o.height];
+  const skin = '#c9a27e';
+  const head = {
+    round:`<ellipse cx="60" cy="60" rx="18" ry="18" fill="${skin}"/>`,
+    oval: `<ellipse cx="60" cy="60" rx="16" ry="20" fill="${skin}"/>`,
+    long: `<ellipse cx="60" cy="61" rx="14" ry="23" fill="${skin}"/>`,
+    joyce:`<ellipse cx="60" cy="58" rx="15" ry="17" fill="${skin}"/><path d="M50,68 Q60,98 70,68 Z" fill="${skin}"/><path d="M60,56 L75,71 L61,72 Z" fill="#b88d69"/>`
+  }[o.face];
+  const hair = {
+    bun:  `<circle cx="60" cy="37" r="8" fill="${o.hairColor}"/><path d="M42,58 Q42,40 60,40 Q78,40 78,58 Q70,47 60,47 Q50,47 42,58 Z" fill="${o.hairColor}"/>`,
+    loose:`<path d="M41,82 Q36,40 60,39 Q84,40 79,82 Q76,60 72,52 Q60,46 48,52 Q44,60 41,82 Z" fill="${o.hairColor}"/>`,
+    short:`<path d="M42,60 Q41,39 60,39 Q79,39 78,60 Q72,48 60,48 Q48,48 42,60 Z" fill="${o.hairColor}"/>`
+  }[o.hair];
+  return `<svg viewBox="0 0 120 170" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <line x1="14" y1="168" x2="106" y2="168" stroke="rgba(239,230,212,.2)"/>
+    <g transform="translate(60 168) scale(${scale}) translate(-60 -168)">
+      <path d="M38,168 L45,92 Q60,83 75,92 L82,168 Z" fill="${o.dress}"/>
+      <rect x="56" y="76" width="8" height="12" fill="${skin}"/>
+      ${head}${hair}
+      <circle cx="54" cy="60" r="1.6" fill="#2a211b"/><circle cx="66" cy="60" r="1.6" fill="#2a211b"/>
+    </g></svg>`;
+}
+function portraitEl(mode){
+  const d = el('div','portrait' + (mode ? ' '+mode : ''));
+  d.innerHTML = `<div class="p-custom">${portraitSVG(look)}</div><div class="p-joyce">${portraitSVG(JOYCE_LOOK)}</div>`;
+  d.appendChild(el('div','cap mono','Maria'));
+  return d;
+}
+function buildCreator(){
+  const box = $('creatorOpts'); box.innerHTML = '';
+  Object.entries(LOOK_OPTS).forEach(([key, opt]) => {
+    const g = el('div','opt'); g.appendChild(el('div','lab mono',opt.label));
+    const row = el('div','row');
+    opt.items.forEach(([val, name]) => {
+      const b = el('button', look[key]===val ? 'on' : '');
+      if(opt.swatch){ const s = el('span','sw'); s.style.background = val; b.appendChild(s); }
+      b.append(name);
+      b.onclick = () => { look[key] = val; buildCreator(); };
+      row.appendChild(b);
+    });
+    g.appendChild(row); box.appendChild(g);
+  });
+  $('creatorPreview').innerHTML = portraitSVG(look);
+}
+
+/* =========================================================
    CHARACTER SELECT
    ========================================================= */
 CAST.forEach(c => {
@@ -383,18 +771,24 @@ CAST.forEach(c => {
   b.appendChild(el('h3',null,c.name));
   b.appendChild(el('p',null,c.blurb));
   if(!c.ready) b.appendChild(el('span','soon mono','Still being written'));
-  b.onclick = () => { if(c.ready) startGabriel(); };
+  b.onclick = () => { if(c.ready) start(c.id); };
   $('cast').appendChild(b);
 });
 
 /* =========================================================
    SCENES
    ========================================================= */
-function startGabriel(){ step = 0; taken = []; setBar(0); $('bar').classList.remove('glitch'); $('barLabel').classList.remove('dead'); $('barLabel').firstElementChild.textContent='Escape'; show('s-scene'); renderStep(); }
+function start(id){
+  cur = STORIES[id];
+  if(cur.creator){ buildCreator(); show('s-creator'); $('becomeMaria').onclick = beginScenes; return; }
+  beginScenes();
+}
+function beginScenes(){ step = 0; taken = []; setBar(0); $('bar').classList.remove('glitch'); $('barLabel').classList.remove('dead'); $('barLabel').firstElementChild.textContent='Escape'; show('s-scene'); renderStep(); }
 
 function renderStep(){
-  const s = GABRIEL[step];
+  const s = cur.scenes[step];
   const body = $('sceneBody'); body.innerHTML = '';
+  if(cur.creator) body.appendChild(portraitEl(s.flicker ? 'flicker' : ''));
   body.appendChild(el('div','place mono',s.place));
   body.appendChild(el('h2',null,s.title));
   const prose = el('div','prose'); s.text.forEach(t => prose.appendChild(para(t))); body.appendChild(prose);
@@ -408,16 +802,16 @@ function renderStep(){
 }
 
 function choose(i){
-  const s = GABRIEL[step], c = s.choices[i];
-  taken.push({ title:s.title, choice:c.label, note:c.note, others:s.choices.filter((_,j)=>j!==i).map(x=>x.label) });
+  const s = cur.scenes[step], c = s.choices[i];
+  taken.push({ title:s.title, choice:c.label, note:c.note, pick:i });
   setBar(escape + c.d);
   const body = $('sceneBody');
   body.querySelector('.choices').remove();
   const r = el('div','result');
   r.appendChild(el('div','delta mono', `Escape +${c.d}%`));
   const prose = el('div','prose'); c.result.forEach(t => prose.appendChild(para(t))); r.appendChild(prose);
-  const n = el('button','next', step < GABRIEL.length-1 ? 'Go on →' : 'Go on →');
-  n.onclick = () => { step++; step < GABRIEL.length ? renderStep() : epiphany(); };
+  const n = el('button','next', 'Go on →');
+  n.onclick = () => { step++; step < cur.scenes.length ? renderStep() : epiphany(); };
   r.appendChild(n);
   body.appendChild(r);
   r.scrollIntoView({behavior:'smooth', block:'start'});
@@ -430,14 +824,16 @@ function epiphany(){
   // Whatever the player chose, the bar is high and full of hope here.
   setBar(Math.max(escape, 86));
   const body = $('sceneBody'); body.innerHTML = '';
-  body.appendChild(el('div','place mono','The Gresham Hotel · Later'));
-  body.appendChild(el('h2',null,'She is crying'));
+  // Maria's custom face flickers one last time, then settles into Joyce's description for good.
+  if(cur.creator){ const p = portraitEl('flicker'); body.appendChild(p); setTimeout(() => { p.classList.remove('flicker'); p.classList.add('joyce'); }, 3400); }
+  body.appendChild(el('div','place mono',cur.epPlace));
+  body.appendChild(el('h2',null,cur.epTitle));
   const prose = el('div','prose epiphany'); body.appendChild(prose);
-  const lines = EPIPHANY.map(t => { const p = para(t); p.classList.add('line'); prose.appendChild(p); return p; });
+  const lines = cur.epiphany.map(t => { const p = para(t); p.classList.add('line'); prose.appendChild(p); return p; });
   lines.forEach((p,i) => setTimeout(() => {
     p.classList.add('show');
-    if(i === 2) $('bar').classList.add('glitch');
-    if(i >= 2) setBar(escape - (i===lines.length-1 ? 100 : 18));
+    if(i === cur.crashAt) $('bar').classList.add('glitch');
+    if(i >= cur.crashAt) setBar(escape - (i===lines.length-1 ? 100 : 18));
     if(i === lines.length-1){
       $('flash').classList.add('on'); setTimeout(()=>$('flash').classList.remove('on'), 160);
       $('bar').classList.remove('glitch'); setBar(0);
@@ -452,8 +848,8 @@ function epiphany(){
    REVEAL: every path converges
    ========================================================= */
 function reveal(){
-  const total = Math.pow(3, GABRIEL.length);
-  $('revealLede').textContent = `There were ${total} different ways through Gabriel's evening. You chose one. Every one of them ended with Michael Furey, the gasworks, and the snow.`;
+  const total = Math.pow(3, cur.scenes.length);
+  $('revealLede').textContent = cur.lede(total);
   drawPaths();
   const ol = $('yours'); ol.innerHTML = '';
   taken.forEach(t => { const li = el('li'); const d = el('div'); d.append(t.choice); d.appendChild(el('span',null, `${t.title} · ${t.note}`)); li.appendChild(d); ol.appendChild(li); });
@@ -463,7 +859,7 @@ function reveal(){
 function drawPaths(){
   const svg = $('paths'); svg.innerHTML = '';
   const NS = 'http://www.w3.org/2000/svg';
-  const cols = GABRIEL.length + 1, W = 700, H = 300, x0 = 30, x1 = 570, end = {x:660, y:H/2};
+  const cols = cur.scenes.length + 1, W = 700, H = 300, x0 = 30, x1 = 570, end = {x:660, y:H/2};
   const colX = i => x0 + (x1-x0) * i / (cols-1);
   const rowY = k => 40 + k * 110;
   const mk = (tag, attrs) => { const n = document.createElementNS(NS, tag); for(const k in attrs) n.setAttribute(k, attrs[k]); svg.appendChild(n); return n; };
@@ -472,7 +868,7 @@ function drawPaths(){
     mk('line',{x1:colX(i),y1:rowY(a),x2:colX(i+1),y2:rowY(b),stroke:'rgba(239,230,212,.10)','stroke-width':1});
   for(let a=0;a<3;a++) mk('path',{d:`M${colX(cols-1)},${rowY(a)} C${colX(cols-1)+50},${rowY(a)} ${end.x-50},${end.y} ${end.x},${end.y}`,fill:'none',stroke:'rgba(239,230,212,.18)','stroke-width':1});
   // the player's route
-  const picks = taken.map(t => GABRIEL.findIndex(g=>g.title===t.title)).map((si,idx) => GABRIEL[si].choices.findIndex(c=>c.label===taken[idx].choice));
+  const picks = taken.map(t => t.pick);
   let d = `M${colX(0)},${rowY(1)}`;
   picks.forEach((p,i) => { d += ` L${colX(i+1)},${rowY(p)}`; });
   d += ` C${colX(cols-1)+50},${rowY(picks[picks.length-1])} ${end.x-50},${end.y} ${end.x},${end.y}`;
@@ -483,8 +879,8 @@ function drawPaths(){
   for(let i=1;i<cols;i++) for(let a=0;a<3;a++) mk('circle',{cx:colX(i),cy:rowY(a),r:picks[i-1]===a?5:3,fill:picks[i-1]===a?'#e8b25c':'rgba(239,230,212,.35)'});
   mk('circle',{cx:colX(0),cy:rowY(1),r:5,fill:'#efe6d4'});
   mk('circle',{cx:end.x,cy:end.y,r:9,fill:'#cfe0ea'});
-  const t = mk('text',{x:end.x,y:end.y+32,'text-anchor':'middle',fill:'#cfe0ea','font-size':13,'font-family':'IBM Plex Mono, monospace'}); t.textContent = 'the snow';
-  const s = mk('text',{x:colX(0),y:rowY(1)+28,fill:'#a99c84','font-size':13,'font-family':'IBM Plex Mono, monospace'}); s.textContent = 'the party';
+  const t = mk('text',{x:end.x,y:end.y+32,'text-anchor':'middle',fill:'#cfe0ea','font-size':13,'font-family':'IBM Plex Mono, monospace'}); t.textContent = cur.endLabel;
+  const s = mk('text',{x:colX(0),y:rowY(1)+28,fill:'#a99c84','font-size':13,'font-family':'IBM Plex Mono, monospace'}); s.textContent = cur.startLabel;
 }
 
 /* =========================================================
